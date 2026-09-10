@@ -46,7 +46,7 @@ const STRINGS = {
     subtitle: "Experience the Tradition. Master the Strategy.",
     play: "PLAY GAME", howto: "HOW TO PLAY", levels_btn: "LEVELS",
     achievements: "ACHIEVEMENTS", about: "ABOUT", home: "Home",
-    sound_on: "Sound", play_as: "Play as:", goat: "Goat", tiger: "Tiger",
+    sound_on: "Sound", play_as: "Pick your side", goat: "Goat", tiger: "Tiger",
     choose_mode: "Choose mode:", mode_single: "1 Player (vs Computer)", mode_two: "2 Players (Local)",
     local_match: "Two Players — Local Match",
     two_player_desc: "Pass the device back and forth. Whoever's turn it is taps their own piece — no computer opponent, no locked levels.",
@@ -87,7 +87,7 @@ const STRINGS = {
     subtitle: "பாரம்பரியத்தை அனுபவியுங்கள். உத்தியில் வெல்லுங்கள்.",
     play: "விளையாட்டைத் தொடங்கு", howto: "எப்படி விளையாடுவது", levels_btn: "நிலைகள்",
     achievements: "சாதனைகள்", about: "பற்றி", home: "முகப்பு",
-    sound_on: "ஒலி", play_as: "இதுவாக விளையாடு:", goat: "ஆடு", tiger: "புலி",
+    sound_on: "ஒலி", play_as: "உங்கள் அணியைத் தேர்வுசெய்க", goat: "ஆடு", tiger: "புலி",
     choose_mode: "முறையைத் தேர்ந்தெடுக்கவும்:", mode_single: "1 வீரர் (கணினிக்கு எதிராக)", mode_two: "2 வீரர்கள் (உள்ளூர்)",
     local_match: "இரு வீரர்கள் — உள்ளூர் ஆட்டம்",
     two_player_desc: "சாதனத்தை மாறி மாறி பயன்படுத்தவும். யாருடைய முறையோ அவர் தங்கள் காயைத் தொடவும் — கணினி எதிராளி இல்லை, பூட்டப்பட்ட நிலைகள் இல்லை.",
@@ -839,6 +839,7 @@ document.addEventListener("DOMContentLoaded", () => {
   applyI18N();
   const p = Storage.load();
   updateSoundButton(p.soundEnabled);
+  initTheme();
 
   document.getElementById("btn-play").onclick = () => showScreen("levels");
   document.getElementById("btn-howto").onclick = () => showScreen("howto");
@@ -855,6 +856,11 @@ document.addEventListener("DOMContentLoaded", () => {
     localStorage.setItem("selectedLanguage", currentLang);
     applyI18N();
     if (state) renderAll();
+  };
+
+  document.getElementById("theme-toggle").onclick = () => {
+    const next = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
+    setTheme(next);
   };
 
   document.getElementById("sound-toggle").onclick = () => {
@@ -929,4 +935,21 @@ document.addEventListener("DOMContentLoaded", () => {
 function updateSoundButton(enabled) {
   const btn = document.getElementById("sound-toggle");
   btn.innerHTML = icon(enabled ? "volume" : "volume-off") + ` <span data-i18n="sound_on">${t("sound_on")}</span>`;
+}
+
+function setTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  localStorage.setItem("theme", theme);
+  const label = document.getElementById("theme-toggle-label");
+  const btn = document.getElementById("theme-toggle");
+  if (label) label.textContent = theme === "light" ? "Light" : "Dark";
+  if (btn) {
+    const use = btn.querySelector("use");
+    if (use) use.setAttribute("href", theme === "light" ? "#icon-sun" : "#icon-moon");
+  }
+}
+
+function initTheme() {
+  const saved = localStorage.getItem("theme");
+  setTheme(saved === "light" ? "light" : "dark");
 }
